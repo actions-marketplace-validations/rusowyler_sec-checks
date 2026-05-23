@@ -1,5 +1,5 @@
-name: "SAST & Supply Chain Scanner"
-description: "Runs Semgrep SAST and audits package.json lifecycle scripts for supply chain attacks"
+name: "SEC Checks - SAST & Supply Chain Scanner"
+description: "Runs security checks using SAST and audit scripts for supply chain attacks"
 author: "rusowyler"
 
 branding:
