@@ -1,4 +1,4 @@
-# SAST & Supply Chain Scanner
+# SEC Checks - SAST & Supply Chain Scanner
 
 A composite GitHub Action that runs [Semgrep](https://semgrep.dev) SAST scanning and audits `package.json` lifecycle scripts for supply chain attacks.
 
@@ -74,21 +74,3 @@ The audit step flags any `preinstall`, `postinstall`, `prepare`, `prepack`, or `
 ```
 
 This fires on 3 patterns: `curl`, `chmod +x`, and `/tmp/`.
-
-## Publishing to the Marketplace
-
-1. Create a new **public** repo named `sast-action`
-2. Push this directory's contents to the root of that repo
-3. Create a release tag: `git tag v1 && git push origin v1`
-4. GitHub will prompt you to publish to the Marketplace from the Releases page
-
-## Repo structure
-
-```
-sast-action/
-├── action.yml           # composite action definition
-├── .semgrep/
-│   └── supply-chain.yml # bundled custom Semgrep rules
-├── example-workflow.yml # example of how to use this action
-└── README.md
-```
