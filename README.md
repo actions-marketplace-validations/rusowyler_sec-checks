@@ -30,7 +30,10 @@ A composite GitHub Action that runs [Semgrep](https://semgrep.dev) SAST scanning
     fail-on-severity: "ERROR"
     supply-chain-audit: "true"
     artifact-name: "sast-results"
+    trusted-actions: "actions/checkout, actions/setup-node, docker/login-action"
 ```
+
+> **`trusted-actions`** — By default the action warns on any `uses: owner/action@vX` reference because mutable tags are a supply chain risk (see [tj-actions/changed-files, March 2025](https://www.infoq.com/news/2025/04/compromised-github-action/)). Add well-maintained, frequently-audited actions here to suppress those warnings while still catching less established ones.
 
 ## Inputs
 
@@ -41,6 +44,7 @@ A composite GitHub Action that runs [Semgrep](https://semgrep.dev) SAST scanning
 | `fail-on-severity` | Minimum severity to fail the build (`ERROR`, `WARNING`, `INFO`) | `ERROR` |
 | `supply-chain-audit` | Enable `package.json` lifecycle script audit | `true` |
 | `artifact-name` | Name of the uploaded results artifact | `semgrep-results` |
+| `trusted-actions` | Comma-separated GitHub Actions allowed to use version tags instead of commit SHAs (e.g. `actions/checkout, docker/login-action`) | `""` |
 
 ## Outputs
 
