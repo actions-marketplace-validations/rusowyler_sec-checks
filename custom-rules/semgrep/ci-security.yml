@@ -1,0 +1,36 @@
+rules:
+  - id: github-actions-unpinned-action
+    languages: [generic]
+    message: >
+      GitHub Action referenced by a mutable tag (latest, main, master, or semver tag).
+      If the tag is moved to a malicious commit the workflow silently executes attacker code.
+      Pin to a full commit SHA instead: uses: owner/action@<sha>.
+      Real example: tj-actions/changed-files (March 2025).
+    severity: WARNING
+    pattern-regex: 'uses:\s+[a-zA-Z0-9._/-]+@(latest|main|master|v\d+(\.\d+)*)\b'
+    paths:
+      include:
+        - .github/workflows/
+    metadata:
+      category: security
+      cwe: CWE-426
+      references:
+        - https://www.infoq.com/news/2025/04/compromised-github-action/
+        - https://www.stepsecurity.io/blog/pinning-github-actions-for-enhanced-security-a-complete-guide
+
+  - id: github-actions-curl-bash
+    languages: [generic]
+    message: >
+      Workflow downloads and pipes directly to a shell without integrity verification.
+      An attacker who controls the remote URL (or a CDN serving it) can execute arbitrary
+      code in the CI runner. Real example: tj-actions/changed-files v44 obfuscated variant.
+    severity: ERROR
+    pattern-regex: '(curl|wget)\s+[^\n|]*\|\s*(bash|sh|zsh)'
+    paths:
+      include:
+        - .github/workflows/
+    metadata:
+      category: security
+      cwe: CWE-494
+      references:
+        - https://www.infoq.com/news/2025/04/compromised-github-action/

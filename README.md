@@ -16,14 +16,14 @@ A composite GitHub Action that runs [Semgrep](https://semgrep.dev) SAST scanning
 - uses: actions/checkout@v6
 
 - name: Run SAST Scanner
-  uses: your-github-username/sast-action@v1
+  uses: rusowyler/sec-checks@v1
 ```
 
 ### With options
 
 ```yaml
 - name: Run SAST Scanner
-  uses: your-github-username/sast-action@v1
+  uses: rusowyler/sec-checks@v1
   with:
     semgrep-config: "p/owasp-top-ten"
     custom-rules-path: ".semgrep/"

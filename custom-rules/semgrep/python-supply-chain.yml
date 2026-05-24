@@ -1,0 +1,50 @@
+rules:
+  - id: setup-py-subprocess
+    languages: [python]
+    message: >
+      subprocess or os.system call in setup.py runs during pip install.
+      Malicious packages use this to execute arbitrary commands on the installer's machine.
+      Legitimate C-extension builds rarely need shell=True or dynamic commands.
+      Real example: Trivy/LiteLLM PyPI attack chain (2026).
+    severity: WARNING
+    pattern-either:
+      - pattern: subprocess.Popen($CMD, ...)
+      - pattern: subprocess.run($CMD, ...)
+      - pattern: subprocess.call($CMD, ...)
+      - pattern: subprocess.check_output($CMD, ...)
+      - pattern: os.system($CMD)
+      - pattern: os.popen($CMD)
+    paths:
+      include:
+        - "**/setup.py"
+    metadata:
+      category: security
+      cwe: CWE-78
+      references:
+        - https://semgrep.dev/blog/2026/the-teampcp-credential-infostealer-chain-attack-reaches-pythons-litellm/
+
+  - id: setup-py-network-request
+    languages: [python]
+    message: >
+      Network request in setup.py executes during pip install.
+      There is no legitimate reason for an install script to make outbound connections.
+      Malicious packages use this to exfiltrate system info, register victims, or download
+      second-stage payloads. Real example: Trivy/LiteLLM PyPI attack chain (2026).
+    severity: ERROR
+    pattern-either:
+      - pattern: urllib.request.urlopen(...)
+      - pattern: urllib2.urlopen(...)
+      - pattern: requests.get(...)
+      - pattern: requests.post(...)
+      - pattern: requests.request(...)
+      - pattern: http.client.HTTPConnection(...)
+      - pattern: http.client.HTTPSConnection(...)
+      - pattern: socket.create_connection(...)
+    paths:
+      include:
+        - "**/setup.py"
+    metadata:
+      category: security
+      cwe: CWE-200
+      references:
+        - https://semgrep.dev/blog/2026/the-teampcp-credential-infostealer-chain-attack-reaches-pythons-litellm/

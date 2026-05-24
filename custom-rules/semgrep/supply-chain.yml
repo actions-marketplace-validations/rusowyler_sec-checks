@@ -1,0 +1,44 @@
+rules:
+  - id: malicious-npm-lifecycle-script
+    languages: [json]
+    message: >
+      Suspicious lifecycle script detected in package.json: '${{ metavariable }}'.
+      Scripts like postinstall/preinstall/prepare can execute arbitrary commands on install.
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          # curl/wget downloading and executing remote binaries
+          - pattern: |
+              {"scripts": {..., "$HOOK": "... curl ...", ...}}
+          - pattern: |
+              {"scripts": {..., "$HOOK": "... wget ...", ...}}
+          # chmod + execute pattern
+          - pattern: |
+              {"scripts": {..., "$HOOK": "... chmod +x ...", ...}}
+          # Piping to shell
+          - pattern: |
+              {"scripts": {..., "$HOOK": "... | sh", ...}}
+          - pattern: |
+              {"scripts": {..., "$HOOK": "... | bash", ...}}
+    metadata:
+      category: security
+      cwe: CWE-506
+      references:
+        - https://owasp.org/www-project-top-ten/
+
+  - id: suspicious-npm-lifecycle-hooks
+    languages: [json]
+    message: >
+      High-risk lifecycle hook '$HOOK' detected. These run automatically during
+      npm install and are a common vector for supply chain attacks.
+    severity: WARNING
+    pattern: |
+      {"scripts": {..., "$HOOK": "$CMD", ...}}
+    metavariable-regex:
+      metavariable: $HOOK
+      regex: ^(pre|post)install$
+    metavariable-pattern:
+      metavariable: $CMD
+      pattern-regex: .+  # flag any non-empty postinstall/preinstall for review
+    metadata:
+      category: security
