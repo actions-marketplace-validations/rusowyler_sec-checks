@@ -54,6 +54,24 @@ A composite GitHub Action that runs [Semgrep](https://semgrep.dev) SAST scanning
 | `blocking-count` | Findings at or above `fail-on-severity` |
 | `supply-chain-findings` | Number of suspicious lifecycle scripts found |
 
+## Suppressing findings for specific paths
+
+If certain directories contain intentional or dev-only code that triggers false positives (e.g. Dockerfiles without a `USER` instruction used only for local development), you can exclude them from Semgrep scanning by creating a `.semgrepignore` file in the root of your repository.
+
+`.semgrepignore` uses the same syntax as `.gitignore`:
+
+```
+# Ignore dev Docker images
+docker/
+
+# Ignore test fixtures
+tests/fixtures/
+```
+
+Semgrep reads this file automatically — no action input change required. Excluded paths are skipped entirely, so no findings will be reported for them.
+
+> **Tip:** To suppress a single rule inline rather than an entire path, add a `# nosemgrep: rule-id` comment on the offending line in your source file.
+
 ## Detected supply chain patterns
 
 The audit step flags any `preinstall`, `postinstall`, `prepare`, `prepack`, or `postpack` script containing:
