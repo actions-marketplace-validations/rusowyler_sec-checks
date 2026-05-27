@@ -63,7 +63,7 @@ runs:
       run: |
         import yaml, re, os
         trusted = [p.strip() for p in os.environ['TRUSTED'].split(',') if p.strip()]
-        excl = r'uses:\s+(' + '|'.join(re.escape(p) for p in trusted) + r')[/@]'
+        excl = r'(?i)uses:\s+(' + '|'.join(re.escape(p) for p in trusted) + r')[/@]'
         with open(os.environ['CI_SEC_SRC']) as f:
             doc = yaml.safe_load(f)
         for r in doc.get('rules', []):
@@ -98,10 +98,12 @@ runs:
           fi
         fi
         if [ "$PR_DIFF_MODE" = "true" ] && [ -n "$GITHUB_BASE_REF" ]; then
-          semgrep ci $CONFIGS --json --output=semgrep-results.json
+          SEMGREP_CMD="semgrep ci $CONFIGS --json --output=semgrep-results.json"
         else
-          semgrep scan $CONFIGS --json --output=semgrep-results.json
+          SEMGREP_CMD="semgrep scan $CONFIGS --json --output=semgrep-results.json"
         fi
+        echo "Running: $SEMGREP_CMD"
+        eval "$SEMGREP_CMD"
       continue-on-error: true
 
     - name: Generate Semgrep Summary
